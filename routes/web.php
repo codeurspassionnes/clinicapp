@@ -7,3 +7,15 @@ Route::get('/', function () {
         'username' => 'yannbanvi'
     ]);
 });
+
+Route::get('/auth', function () {
+    return inertia('Welcome', [
+        'username' => 'yannbanvi'
+    ]);
+})->name('auth.index');
+
+Route::get('/setup', function () {
+    return inertia('Welcome', [
+        'username' => 'yannbanvi'
+    ]);
+})->name('setup.index');

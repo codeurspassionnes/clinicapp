@@ -7,38 +7,42 @@
                         <h1 class="card-title">Configuration de clinic App</h1>
                     </div>
                     <div class="card-body">
-                        <div class="stepper-items">
-                            <div class="stepper-item active">1</div>
-                            <div class="progress line">
-                                <div
-                                    class="progress-bar"
-                                    role="progressbar"
-                                    style="width: 25%"
-                                    aria-valuenow="25"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
+                        <StepItems
+                            :steps="{
+                                currentStep: currentStep,
+                                items: stepItems,
+                            }"
+                        />
+                        <div class="stepper-forms">
+                            <div v-if="currentStep === 1">
+                                <h3>Formulaire étape 1</h3>
                             </div>
-                            <div class="stepper-item">2</div>
-                            <div class="progress line">
-                                <div
-                                    class="progress-bar"
-                                    role="progressbar"
-                                    aria-valuenow="0"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
+                            <div v-if="currentStep === 2">
+                                <h3>Formulaire étape 2</h3>
                             </div>
-                            <div class="stepper-item">3</div>
+                            <div v-if="currentStep === 3">
+                                <h3>Formulaire étape 3</h3>
+                            </div>
                         </div>
-                        <div class="stepper-forms"></div>
                     </div>
                     <div class="card-footer">
                         <div
                             class="d-flex justify-content-between align-items-center"
                         >
-                            <button class="btn btn-default">Précédent</button>
-                            <button class="btn btn-primary">Suivant</button>
+                            <button
+                                :disabled="actionState.shouldDisablePrevButton"
+                                @click="goToPrev"
+                                class="btn btn-default"
+                            >
+                                Précédent
+                            </button>
+                            <button
+                                :disabled="actionState.shouldDisableNextButton"
+                                @click="goToNext"
+                                class="btn btn-primary"
+                            >
+                                Suivant
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -47,40 +51,47 @@
     </div>
 </template>
 <script setup>
+import { computed, reactive, ref } from "vue";
+import StepItems from "./step-items/StepItems.vue";
 const props = defineProps({
     username: String,
 });
+
+const currentStep = ref(1);
+
+const stepItems = computed(() => [
+    {
+        id: 1,
+        title: "Configuration de base",
+        progress: 0,
+    },
+    {
+        id: 2,
+        title: "Identité de l'entreprise",
+        progress: 0,
+    },
+    {
+        id: 3,
+        title: "Administration",
+        progress: 0,
+    },
+]);
+
+const goToNext = () => {
+    if (currentStep.value < stepItems.value?.length) {
+        currentStep.value++;
+    }
+};
+const goToPrev = () => {
+    if (currentStep.value > 1) {
+        currentStep.value--;
+    }
+};
+
+const actionState = computed(() => ({
+    shouldDisablePrevButton: currentStep.value <= 1,
+    shouldDisableNextButton: currentStep.value === stepItems.value?.length,
+}));
 </script>
 
-<style scoped>
-.stepper-items {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-}
-.stepper-items .stepper-item {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.1em;
-    color: rgba(13, 12, 12, 0.829);
-    background-color: transparent;
-    border: 2px solid rgb(233, 236, 239);
-}
-.stepper-item.active {
-    color: white;
-    background-color: #007bff;
-    border: none;
-    box-shadow: 0 0 0 5px white, 0 0 0 7px #007bff;
-}
-.stepper-items .line {
-    flex: 1;
-}
-.progress-bar,
-.progress {
-    height: 5px;
-}
-</style>
+<style scoped></style>
